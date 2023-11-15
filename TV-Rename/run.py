@@ -18,8 +18,8 @@ def run():
     if file_list:
         shutil.rmtree(output_path)
         output_path.mkdir()
-    file_list = list(input_path.glob('*.mp4'))
     
+    file_list = list(input_path.glob('*.mp4'))
     options = {
         'length': 70,
         'spinner': 'classic',
