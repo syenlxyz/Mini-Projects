@@ -54,9 +54,10 @@ def run():
         results.text(f'Printing Word Document: {file_path.name}')
         print_word(file_path)
 
-def print_word(file_path, params):
+def print_word(file_path):
     wrd = Dispatch('Word.Application')
     wrd.Visible = False
+    wrd.Options.PrintReverse = False
     
     params = {
         'Background': False,
