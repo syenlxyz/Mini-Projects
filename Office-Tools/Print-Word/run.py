@@ -3,12 +3,38 @@ from datetime import datetime
 from pathlib import Path
 from win32com.client import Dispatch
 
+WdPrintOutRange = {
+    'AllDocument': 0,
+    'CurrentPage': 2,
+    'FromTo': 3,
+    'RangeOfPages': 4,
+    'Selection': 1
+}
+
+WdPrintOutItem = {
+    'AutoTextEntries': 4,
+    'Comments': 2,
+    'DocumentContent': 0,
+    'DocumentWithMarkup': 7,
+    'Envelope': 6,
+    'KeyAssignments': 5,
+    'Markup': 2,
+    'Properties': 1,
+    'Styles': 3
+}
+
+WdPrintOutPages = {
+    'AllPages': 0,
+    'EvenPagesOnly': 2,
+    'OddPagesOnly': 1
+}
+
 def run():
     input_path = Path.cwd() / 'input'
     if not input_path.is_dir():
         input_path.mkdir()
     
-    file_list = list(input_path.glob('*.docx'))
+    file_list = list(input_path.glob('*.doc')) + list(input_path.glob('*.docx'))
     options = {
         'length': 70,
         'spinner': 'classic',
@@ -24,14 +50,32 @@ def run():
         **options
     )
     
-    app = Dispatch('Word.Application')
-    app.Visible = False
     for file_path in results:
         results.text(f'Printing Word Document: {file_path.name}')
-        doc = app.Documents.Open(str(file_path), ReadOnly=True)
-        doc.PrintOut()
-        doc.Close()
-    app.Quit()
+        print_word(file_path)
+
+def print_word(file_path, params):
+    wrd = Dispatch('Word.Application')
+    wrd.Visible = False
+    
+    params = {
+        'Background': False,
+        'Append': False,
+        'Range': WdPrintOutRange['AllDocument'],
+        'OutputFileName': '',
+        'From': '',
+        'To': '',
+        'Item': WdPrintOutItem['DocumentContent'],
+        'Copies': 1,
+        'Pages': '',
+        'PageType': WdPrintOutPages['AllPages'],
+        'PrintToFile': False,
+        'Collate': True
+    }
+    
+    wrd.Documents.Open(file_path.as_posix(), ReadOnly=True)
+    wrd.PrintOut(**params)
+    wrd.Quit(SaveChanges=False)
 
 if __name__ == '__main__':
     start_time = datetime.now()
