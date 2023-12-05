@@ -97,8 +97,7 @@ def get_episode(file_path):
         r'-\s?\d+',
         r'\.\d+',
         r'第\d+话',
-        r'第\d+話',
-        r'E\d+'
+        r'第\d+話'
     ]
     
     for pattern in patterns:
