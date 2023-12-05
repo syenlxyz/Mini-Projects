@@ -6,9 +6,29 @@ import re
 
 def run():
     input_path = Path.cwd() / 'input'
+    input_folder = 'Watch - TV Shows (Anime)'
+    input_path = Path('f:/') / input_folder # f in asus, d in lenovo
+    
+    options = {
+        'length': 70,
+        'spinner': 'classic',
+        'bar': 'classic2',
+        'receipt_text': True,
+        'dual_line': True
+    }
     
     folder_list = [path for path in input_path.iterdir() if path.is_dir()]
-    for folder_path in folder_list:
+    results = alive_it(
+        folder_list,
+        len(folder_list),
+        finalize=lambda bar: bar.text('Renaming files: done'),
+        **options
+    )
+    
+    for folder_path in results:
+        folder_name = folder_path.name
+        results.text(f'Renaming files: {folder_name}')
+        
         file_list = list(folder_path.glob('*.mp4'))
         for file_path in file_list:
             update_title(file_path)
@@ -27,22 +47,7 @@ def run():
         season = season.zfill(num_digit)
         episodes = [ifelse(episode, episode.zfill(num_digit), episode) for episode in episodes]
         
-        options = {
-            'length': 70,
-            'spinner': 'classic',
-            'bar': 'classic2',
-            'receipt_text': True,
-            'dual_line': True
-        }
-        
-        results = alive_it(
-            episodes,
-            len(episodes),
-            finalize=lambda bar: bar.text('Renaming files: done'),
-            **options
-        )
-        
-        for index, episode in enumerate(results):
+        for index, episode in enumerate(episodes):
             file_path = file_list[index]
             if episode:
                 file_name = f'{english}.{chinese}.S{season}E{episode}.{subtitle}.{resolution}.mp4'
