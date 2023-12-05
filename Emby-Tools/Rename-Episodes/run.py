@@ -6,8 +6,6 @@ import re
 
 def run():
     input_path = Path.cwd() / 'input'
-    input_folder = 'Watch - TV Shows (Anime)'
-    input_path = Path('f:/') / input_folder # f in asus, d in lenovo
     
     options = {
         'length': 70,
@@ -42,11 +40,6 @@ def run():
         
         season = get_season(folder_path)
         episodes = get_episodes(file_list)
-        
-        num_digit = max([len(episode) for episode in episodes if episode])
-        season = season.zfill(num_digit)
-        episodes = [ifelse(episode, episode.zfill(num_digit), episode) for episode in episodes]
-        
         for index, episode in enumerate(episodes):
             file_path = file_list[index]
             if episode:
@@ -64,14 +57,15 @@ def update_title(file_path):
         file.save()
 
 def get_season(folder_path):
+    num_digit = 2
     pattern = r'\[S\d+\]'
     result = re.search(pattern, folder_path.name)
     if result:
         text = result.group()
         search = re.search(r'\d+', text)
-        season = search.group()
+        season = search.group().zfill(num_digit)
     else:
-        season = '1'
+        season = '1'.zfill(num_digit)
     return season
 
 def get_episodes(file_list):
@@ -89,6 +83,9 @@ def get_episodes(file_list):
     start = min([int(episode) for episode in episodes if episode])
     if start > 1:
         episodes = [ifelse(episode, str(int(episode) - start + 1), episode) for episode in episodes]
+    
+    num_digit = max([len(episode) for episode in episodes if episode])
+    episodes = [ifelse(episode, episode.zfill(num_digit), episode) for episode in episodes]
     return episodes
 
 def get_episode(file_path):
