@@ -6,27 +6,9 @@ import re
 
 def run():
     input_path = Path.cwd() / 'input'
-
-    folder_list = [path for path in input_path.iterdir() if path.is_dir()]
-    options = {
-        'length': 70,
-        'spinner': 'classic',
-        'bar': 'classic2',
-        'receipt_text': True,
-        'dual_line': True
-    }
-
-    results = alive_it(
-        folder_list,
-        len(folder_list),
-        finalize=lambda bar: bar.text('Renaming files: done'),
-        **options
-    )
     
+    folder_list = [path for path in input_path.iterdir() if path.is_dir()]
     for folder_path in folder_list:
-        folder_name = folder_path.name
-        results.text(f'Renaming files: {folder_name}')
-        
         file_list = list(folder_path.glob('*.mp4'))
         for file_path in file_list:
             update_title(file_path)
@@ -41,13 +23,30 @@ def run():
         season = get_season(folder_path)
         episodes = get_episodes(file_list)
         
-        num_digit = len(episodes[0])
+        num_digit = max([len(episode) for episode in episodes if episode])
         season = season.zfill(num_digit)
+        episodes = [ifelse(episode, episode.zfill(num_digit), episode) for episode in episodes]
         
-        for episode in episodes:
+        options = {
+            'length': 70,
+            'spinner': 'classic',
+            'bar': 'classic2',
+            'receipt_text': True,
+            'dual_line': True
+        }
+        
+        results = alive_it(
+            episodes,
+            len(episodes),
+            finalize=lambda bar: bar.text('Renaming files: done'),
+            **options
+        )
+        
+        for index, episode in enumerate(results):
+            file_path = file_list[index]
             if episode:
                 file_name = f'{english}.{chinese}.S{season}E{episode}.{subtitle}.{resolution}.mp4'
-                target = file_path.parent / file_name
+                target = folder_path / file_name
                 file_path.rename(target)
 
 def update_title(file_path):
@@ -85,9 +84,6 @@ def get_episodes(file_list):
     start = min([int(episode) for episode in episodes if episode])
     if start > 1:
         episodes = [ifelse(episode, str(int(episode) - start + 1), episode) for episode in episodes]
-    
-    num_digit = max([len(episode) for episode in episodes if episode])
-    episodes = [ifelse(episode, episode.zfill(num_digit), episode) for episode in episodes]
     return episodes
 
 def get_episode(file_path):
