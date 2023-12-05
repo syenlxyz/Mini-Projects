@@ -27,16 +27,17 @@ def run():
         folder_name = folder_path.name
         results.text(f'Renaming files: {folder_name}')
         
-        file_list = list(folder_path.glob('*.mp4'))
-        for file_path in file_list:
-            update_title(file_path)
-        
         pattern = r'\[(.*?)\]'
         result = re.findall(pattern, folder_path.name)
         english = result[0]
         chinese = result[1]
         subtitle = result[-3]
         resolution = result[-2]
+        
+        file_list = list(folder_path.glob('*.mp4'))
+        for file_path in file_list:
+            update_title(file_path)
+        file_list = list(folder_path.glob('*.mp4'))
         
         season = get_season(folder_path)
         episodes = get_episodes(file_list)
@@ -55,6 +56,9 @@ def update_title(file_path):
         file['©nam'] = file_path.stem
         file['©cmt'] = file_path.stem
         file.save()
+    else:
+        target = file_path.parent / f'{title}.mp4'
+        file_path.rename(target)
 
 def get_season(folder_path):
     num_digit = 2
