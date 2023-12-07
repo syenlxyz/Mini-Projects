@@ -98,14 +98,6 @@ def print_word(file_path):
     wrd.Visible = False
     wrd.Options.PrintReverse = True
     
-    wrd.Documents.Open(file_path.as_posix(), ReadOnly=True)
-    
-    num_page = wrd.ActiveDocument.ComputeStatistics(Statistic=WdStatistic['Pages'])
-    if num_page % 2:
-        wrd.Selection.GoTo(WdGoToItem['Line'], WdGoToDirection['Last'])
-        wrd.Selection.EndKey()
-        wrd.Selection.InsertNewPage()
-    
     params = {
         'Background': False,
         'Append': False,
@@ -120,6 +112,14 @@ def print_word(file_path):
         'PrintToFile': False,
         'Collate': True
     }
+    
+    wrd.Documents.Open(file_path.as_posix(), ReadOnly=True)
+    
+    num_page = wrd.ActiveDocument.ComputeStatistics(Statistic=WdStatistic['Pages'])
+    if num_page % 2:
+        wrd.Selection.GoTo(WdGoToItem['Line'], WdGoToDirection['Last'])
+        wrd.Selection.EndKey()
+        wrd.Selection.InsertNewPage()
     
     params['PageType'] = WdPrintOutPages['OddPagesOnly']
     wrd.PrintOut(**params)
