@@ -3,9 +3,17 @@ from datetime import datetime
 from mutagen.mp4 import MP4
 from pathlib import Path
 import re
+import shutil
 
 def run():
     input_path = Path.cwd() / 'input'
+    output_path = Path.cwd() / 'output'
+    
+    if not input_path.is_dir():
+        input_path.mkdir()
+    
+    if not output_path.is_dir():
+        output_path.mkdir()
     
     options = {
         'length': 70,
@@ -24,8 +32,10 @@ def run():
     )
     
     for folder_path in results:
-        folder_name = folder_path.name
-        results.text(f'Renaming files: {folder_name}')
+        results.text(f'Renaming files: {folder_path.name}')
+        file_list = list(folder_path.glob('*.mp4'))
+        for file_path in file_list:
+            update_title(file_path)
         
         pattern = r'\[(.*?)\]'
         result = re.findall(pattern, folder_path.name)
@@ -35,18 +45,18 @@ def run():
         resolution = result[-2]
         
         file_list = list(folder_path.glob('*.mp4'))
-        for file_path in file_list:
-            update_title(file_path)
-        file_list = list(folder_path.glob('*.mp4'))
-        
         season = get_season(folder_path)
         episodes = get_episodes(file_list)
+        
         for index, episode in enumerate(episodes):
             file_path = file_list[index]
             if episode:
                 file_name = f'{english}.{chinese}.S{season}E{episode}.{subtitle}.{resolution}.mp4'
                 target = folder_path / file_name
                 file_path.rename(target)
+            else:
+                target = output_path / file_path.name
+                shutil.move(file_path, target)
 
 def update_title(file_path):
     file = MP4(file_path)
