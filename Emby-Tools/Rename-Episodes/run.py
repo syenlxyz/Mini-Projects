@@ -60,7 +60,10 @@ def run():
 
 def update_title(file_path):
     file = MP4(file_path)
-    title = ''.join(file['©nam'])
+    if '©nam' in file.keys():
+        title = ''.join(file['©nam'])
+    else:
+        title = None
     
     if not title:
         file['©nam'] = file_path.stem
