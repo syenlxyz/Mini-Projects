@@ -1,6 +1,7 @@
 from alive_progress import alive_it
 from datetime import datetime
 from pathlib import Path
+from PyPDF2 import PdfWriter
 from win32com.client import Dispatch
 
 iPageOption = {
@@ -19,7 +20,10 @@ def run():
         input_path.mkdir()
     
     if not temp_path.is_file():
-        pass # create empty pdf file
+        writer = PdfWriter()
+        writer.add_blank_page(width=8.3*72, height=11.7*72)
+        with open(temp_path, 'wb') as file:
+            writer.write(file)
     
     file_list = list(input_path.glob('*.pdf'))
     options = {
@@ -55,7 +59,7 @@ def print_pdf(file_path, temp_path):
         temp = Dispatch('AcroExch.PDDoc')
         temp.Open(temp_path.as_posix())
         pdDoc.InsertPages(num_page-1, temp, 0, 1, 0)
-        temp.Close(True)
+        temp.Close()
     
     params = {
         'nFirstPage': 0,
@@ -75,7 +79,7 @@ def print_pdf(file_path, temp_path):
     params['iPageOption'] = iPageOption['PDEvenPagesOnly']
     avDoc.PrintPagesEx(**params)
     
-    avDoc.Close(True)
+    avDoc.Close(1)
     app.MenuItemExecute('Quit')
 
 if __name__ == '__main__':
