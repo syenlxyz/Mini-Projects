@@ -39,9 +39,9 @@ def run():
     
     for file_path in results:
         results.text(f'Printing PDF Document: {file_path.name}')
-        print_pdf(file_path)
+        print_pdf(file_path, temp_path)
 
-def print_pdf(file_path):
+def print_pdf(file_path, temp_path):
     app = Dispatch('AcroExch.App')
     app.Hide()
     
