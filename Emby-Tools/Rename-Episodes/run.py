@@ -60,13 +60,13 @@ def run():
 
 def update_title(file_path):
     file = MP4(file_path)
-    title = ''.join(file['©nam'])
-    
+    title = file.get('©nam')
     if not title:
         file['©nam'] = file_path.stem
         file['©cmt'] = file_path.stem
         file.save()
     else:
+        title = ''.join(title)
         target = file_path.parent / f'{title}.mp4'
         file_path.rename(target)
 
