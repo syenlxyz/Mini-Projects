@@ -22,7 +22,7 @@ def run():
     if not temp_path.is_file():
         raise Exception('temp.pdf not found')
     
-    file_list = list(input_path.glob('*.pdf'))[-1:]
+    file_list = list(input_path.glob('*.pdf'))
     options = {
         'length': 70,
         'spinner': 'classic',
@@ -51,12 +51,6 @@ def print_pdf(file_path, temp_path):
     
     pdDoc = avDoc.GetPDDoc()
     num_page = pdDoc.GetNumPages()
-
-    if num_page % 2:
-        temp = Dispatch('AcroExch.PDDoc')
-        temp.Open(temp_path.as_posix())
-        pdDoc.InsertPages(num_page-1, temp, 0, 1, 0)
-        temp.Close()
     
     params = {
         'nFirstPage': 0,
@@ -76,6 +70,12 @@ def print_pdf(file_path, temp_path):
     params['iPageOption'] = iPageOption['PDEvenPagesOnly']
     avDoc.PrintPagesEx(**params)
     
+    if num_page % 2:
+        temp = Dispatch('AcroExch.PDDoc')
+        temp.Open(temp_path.as_posix())
+        pdDoc.InsertPages(num_page-1, temp, 0, 1, 0)
+        temp.Close()
+
     avDoc.Close(1)
     app.MenuItemExecute('Quit')
 
