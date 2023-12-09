@@ -26,14 +26,12 @@ def run():
         height = (297 * ureg.millimeter).to('inch')
         
         writer = PdfWriter()
-        writer.add_blank_page(
-            width.magnitude * 72,
-            height.magnitude * 72
-        )
+        writer.add_blank_page(width.magnitude * 72, height.magnitude * 72)
+        writer.add_blank_page(width.magnitude * 72, height.magnitude * 72)
         with open(temp_path, 'wb') as file:
             writer.write(file)
     
-    file_list = list(input_path.glob('*.pdf'))
+    file_list = list(input_path.glob('*.pdf'))[-1:]
     options = {
         'length': 70,
         'spinner': 'classic',
