@@ -20,7 +20,7 @@ def run():
         input_path.mkdir()
     
     if not temp_path.is_file():
-        pdfkit.from_string('\t', temp_path)
+        raise Exception('temp.pdf not found')
     
     file_list = list(input_path.glob('*.pdf'))[-1:]
     options = {
