@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from PyPDF2 import PdfWriter
 from win32com.client import Dispatch
+import pint
 
 iPageOption = {
     'PDBeforeFirstPage': -1,
@@ -20,8 +21,15 @@ def run():
         input_path.mkdir()
     
     if not temp_path.is_file():
+        ureg = pint.UnitRegistry()
+        width = (210 * ureg.millimeter).to('inch')
+        height = (297 * ureg.millimeter).to('inch')
+        
         writer = PdfWriter()
-        writer.add_blank_page(width=8.3*72, height=11.7*72)
+        writer.add_blank_page(
+            width.magnitude * 72,
+            height.magnitude * 72
+        )
         with open(temp_path, 'wb') as file:
             writer.write(file)
     
