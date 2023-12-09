@@ -13,8 +13,13 @@ iPageOption = {
 
 def run():
     input_path = Path.cwd() / 'input'
+    temp_path = Path.cwd() / 'temp.pdf'
+    
     if not input_path.is_dir():
         input_path.mkdir()
+    
+    if not temp_path.is_file():
+        pass # create empty pdf file
     
     file_list = list(input_path.glob('*.pdf'))
     options = {
@@ -45,6 +50,12 @@ def print_pdf(file_path):
     
     pdDoc = avDoc.GetPDDoc()
     num_page = pdDoc.GetNumPages()
+
+    if num_page % 2:
+        temp = Dispatch('AcroExch.PDDoc')
+        temp.Open(temp_path.as_posix())
+        pdDoc.InsertPages(num_page-1, temp, 0, 1, 0)
+        temp.Close(True)
     
     params = {
         'nFirstPage': 0,
@@ -52,13 +63,18 @@ def print_pdf(file_path):
         'nPSLevel': 3,
         'bBinaryOk': 0,
         'bShrinkToFit': 0,
-        'bReverse': False,
+        'bReverse': True,
         'bFarEastFontOpt': 0,
         'bEmitHalftones': 0,
         'iPageOption': iPageOption['PDAllPages']
     }
     
+    params['iPageOption'] = iPageOption['PDOddPagesOnly']
     avDoc.PrintPagesEx(**params)
+    input('Press ENTER to continue...')
+    params['iPageOption'] = iPageOption['PDEvenPagesOnly']
+    avDoc.PrintPagesEx(**params)
+    
     avDoc.Close(True)
     app.MenuItemExecute('Quit')
 
