@@ -5,7 +5,7 @@ from pathlib import Path
 
 def run():
     input_path = Path.cwd() / 'input'
-    file_list = list(input_path.glob('**/*.mp4')) + list(input_path.glob('**/*.mp4'))
+    file_list = list(input_path.glob('**/*.mp3')) + list(input_path.glob('**/*.mp4'))
     
     options = {
         'length': 70,
