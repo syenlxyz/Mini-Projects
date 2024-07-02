@@ -98,7 +98,7 @@ def get_episodes(file_list):
     if start > 1:
         episodes = [ifelse(episode, str(int(episode) - start + 1), episode) for episode in episodes]
     
-    num_digit = max([len(episode) for episode in episodes if episode])
+    num_digit = max([len(episode) for episode in episodes if episode]) # Set minimum to 2 digits
     episodes = [ifelse(episode, episode.zfill(num_digit), episode) for episode in episodes]
     return episodes
 
